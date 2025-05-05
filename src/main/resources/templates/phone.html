@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Каталог телефонов</title>
+    <!-- Подключение Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #f7f2ed 0%, #ebe6e2 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #4a4a4a;
+        }
+        .container {
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .table thead {
+            background-color: #eae4dd;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Каталог телефонов</h1>
+
+    <!-- Форма поиска -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Поиск по параметрам</h5>
+            <form th:action="@{/phonePage/search}" method="get" class="row gy-2 gx-3 align-items-center">
+                <div class="col-auto">
+                    <label for="brand" class="visually-hidden">Бренд</label>
+                    <input type="text" name="brand" id="brand" class="form-control" placeholder="Бренд">
+                </div>
+                <div class="col-auto">
+                    <label for="model" class="visually-hidden">Модель</label>
+                    <input type="text" name="model" id="model" class="form-control" placeholder="Модель">
+                </div>
+                <div class="col-auto">
+                    <label for="processor" class="visually-hidden">Процессор</label>
+                    <input type="text" name="processor" id="processor" class="form-control" placeholder="Процессор">
+                </div>
+                <div class="col-auto">
+                    <label for="screenDiagonal" class="visually-hidden">Диагональ</label>
+                    <input type="text" name="screenDiagonal" id="screenDiagonal" class="form-control" placeholder="Диагональ">
+                </div>
+                <div class="col-auto">
+                    <label for="cameraResolution" class="visually-hidden">Камера</label>
+                    <input type="text" name="cameraResolution" id="cameraResolution" class="form-control" placeholder="Камера">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Блок сортировки по цене -->
+    <div class="mb-3 d-flex">
+        <span class="me-2 align-self-center">Сортировать по цене:</span>
+        <a th:href="@{/phonePage?sort=price_asc}" class="btn btn-outline-primary btn-sm me-2">По возрастанию</a>
+        <a th:href="@{/phonePage?sort=price_desc}" class="btn btn-outline-primary btn-sm">По убыванию</a>
+    </div>
+
+    <!-- Таблица с телефонами -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Бренд</th>
+                <th>Модель</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="phone : ${phones}">
+                <td th:text="${phone.brand}">Samsung</td>
+                <td th:text="${phone.model}">Galaxy S21</td>
+                <td th:text="${phone.price}">799</td>
+                <td>
+                    <!-- Кнопка для открытия модального окна с подробной информацией -->
+                    <button type="button"
+                            class="btn btn-info btn-sm"
+                            data-bs-toggle="modal"
+                            th:attr="data-bs-target=${'#phoneModal' + ${phone.id}}">
+                        Подробнее
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Модальные окна для каждого телефона -->
+    <div th:each="phone : ${phones}">
+        <div class="modal fade" th:id="${'phoneModal' + ${phone.id}}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" th:text="'Детали: ' + ${phone.brand} + ' ' + ${phone.model}">Детали</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Цена:</strong> <span th:text="${phone.price}"></span></p>
+                        <div th:if="${phone.characteristics != null}">
+                            <p><strong>Процессор:</strong> <span th:text="${phone.characteristics.processor}"></span></p>
+                            <p><strong>Диагональ экрана:</strong> <span th:text="${phone.characteristics.screenDiagonal}"></span></p>
+                            <p><strong>Разрешение камеры:</strong> <span th:text="${phone.characteristics.cameraResolution}"></span></p>
+                            <p><strong>Внутреннее хранилище:</strong> <span th:text="${phone.characteristics.internalStorage}"></span></p>
+                        </div>
+                        <div th:if="${phone.characteristics == null}">
+                            <p>Нет дополнительной информации по характеристикам.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
