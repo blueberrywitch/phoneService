@@ -1,54 +1,61 @@
-package dika;
+package dika.conventer;
 
 import dika.model.Characteristics;
 import dika.model.Phone;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.replaceAll;
 
 @Component
+@Slf4j
 public class CSVToModelConverter {
 
-    public List<Phone> convertCSVToPhones(String csvContent) {
-        String[] lines = csvContent.split("\n");
-        String[] headers = lines[0].split(",");
-
-        return Arrays.stream(lines)
-                .skip(1) // Skip the header line
-                .map(line -> convertToPhone(line))
-                .collect(Collectors.toList());
+    public static List<Phone> convertCSVToPhones(Iterable<CSVRecord> records) {
+        List<Phone> phones = new ArrayList<>();
+        for (CSVRecord record : records) {
+            String[] values = record.get("Model Name").split(" ");
+            String modelName = "";
+            for (int i = 0; i < values.length - 1; i++) {
+                modelName += values[i] + " ";
+            }
+            phones.add(Phone.builder()
+                    .brand(record.get("Company Name"))
+                    .model(modelName)
+                    .price(Double.parseDouble(record.get("Launched Price (USA)").replaceAll("[^0-9.]",
+                            "").replace(",", ".").trim()))
+                    .characteristics(
+                            Characteristics.builder()
+                                    .processor(record.get("Processor"))
+                                    .screenDiagonal(Double.parseDouble(record.get("Screen Size").split(",")[0]
+                                            .replaceAll("[^0-9\\.]", "")))
+                                    .cameraResolution(record.get("Back Camera"))
+                                    .weight(Double.parseDouble(record.get("Mobile Weight").replaceAll("\\p{L}",
+                                            "").replace(",", ".").trim()))
+                                    .batteryCapacity(Double.parseDouble(record.get("Battery Capacity")
+                                            .replaceAll("\\p{L}", "").
+                                            replace(",", ".").trim()))
+                                    .internalStorage(values[values.length - 1])
+                                    .build()
+                    )
+                    .build());
+        }
+        return phones;
     }
 
-    private Phone convertToPhone(String csvLine) {
-        String[] values = csvLine.split(",");
-        List<String> headers = Arrays.asList("Company Name", "Model Name", "Launched Price (USA)", "Processor",
-                "Screen Size", "Camera Resolution", "Weight", "Battery Capacity", "Internal Storage");
 
-        String[] split = values[headers.indexOf("Model Name")].split(" ");
-        String modelName = "";
-        for (int i = 0; i<split.length-2; i++) {
-            modelName += split[i] + " ";
+    public static Iterable<CSVRecord> processCSVFile(String filePath) throws IOException {
+        Reader in = new FileReader(filePath);
 
-        }
-
-        return Phone.builder()
-                .brand(values[headers.indexOf("Company Name")])
-                .model(modelName)
-                .price(values[headers.indexOf("Launched Price (USA)")].replaceAll("[a-zA-Z]", "") + "$")
-                .characteristics(
-                        Characteristics.builder()
-                                .processor(values[headers.indexOf("Processor")])
-                                .screenDiagonal(values[headers.indexOf("Screen Size")])
-                                .cameraResolution(values[headers.indexOf("Camera Resolution")])
-                                .wieght(values[headers.indexOf("Weight")])
-                                .batteryCapacity(values[headers.indexOf("Battery Capacity")])
-                                .internalStorage(split[split.length-2] + " GB")
-                                .build()
-                )
-                .build();
+        Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .parse(in);
+        return records;
     }
 }

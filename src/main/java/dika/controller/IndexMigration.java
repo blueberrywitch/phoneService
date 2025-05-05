@@ -1,4 +1,4 @@
-package dika;
+package dika.controller;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +25,9 @@ public class IndexMigration {
         try (Connection c = ds.getConnection();
              Statement st = c.createStatement()) {
 
-            // Явно указываем схему public (если используется):
             st.execute("DROP INDEX IF EXISTS public.idx_phones_model");
             st.execute("DROP INDEX IF EXISTS public.idx_phones_brand");
 
-            // Создаём только если не существует:
             st.execute("CREATE INDEX IF NOT EXISTS idx_phones_model " +
                     "ON phones USING HASH (model)");
             log.info("Hash-индекс создан (если не был): phones(model)");

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: PhoneService
+  datasource:
+    url: jdbc:postgresql://localhost:5432/phoneservice
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+  app:
+    update:
+      cron: "0 0 1 * * ?"
+    kaggle:
+      url: https://www.kaggle.com/datasets/
+      name: abdulmalik1518/mobiles-dataset-2025

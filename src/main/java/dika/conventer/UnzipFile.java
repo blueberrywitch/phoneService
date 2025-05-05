@@ -1,4 +1,4 @@
-package dika;
+package dika.conventer;
 
 import org.springframework.stereotype.Component;
 

@@ -1,13 +1,14 @@
-package dika;
+package dika.service;
 
 import dika.model.Phone;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PhoneService {
     Phone createPhone(Phone phone);
 
-    Phone updatePhone(Long id, Phone phone);
+    void updatePhone(Long id, Phone phone);
 
     Phone getPhoneById(Long id);
 
@@ -15,17 +16,6 @@ public interface PhoneService {
 
     void deletePhone(Long id);
 
-    List<Phone> searchPhones(String brand, String model, String processor, String screenDiagonal, String cameraResolution);
+    void saveCSV(String csvContent) throws IOException;
 
-    List<Phone> filterPhonesByPrice(Double minPrice, Double maxPrice);
-
-    List<Phone> filterPhonesByProcessor(String processor);
-
-    List<Phone> filterPhonesByScreenDiagonal(String screenDiagonal);
-
-    List<Phone> filterPhonesByCameraResolution(String cameraResolution);
-
-    List<Phone> filterPhonesByInternalStorage(String internalStorage);
-
-    List<Phone> filterPhonesByBrand(String brand);
 }

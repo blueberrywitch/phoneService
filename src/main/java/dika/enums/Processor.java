@@ -1,26 +1,24 @@
-package dika;
+package dika.enums;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum Processor {
-    APPLE_A_SERIES,
-    APPLE_M_SERIES,
-    QUALCOMM_SNAPDRAGON_8_GEN_1,
-    QUALCOMM_SNAPDRAGON_8_GEN_2,
-    MEDIATEK_DIMENSITY_1200,
-    MEDIATEK_DIMENSITY_9000,
-    MEDIATEK_DIMENSITY_1000,
-    MEDIATEK_DIMENSITY_8000,
-    MEDIATEK_DIMENSITY_7000,
-    MEDIATEK_DIMENSITY_6000,
-    MEDIATEK_DIMENSITY_5000,
-    MEDIATEK_DIMENSITY_4000,
-    MEDIATEK_DIMENSITY_3000,
-    MEDIATEK_DIMENSITY_2000,
-    MEDIATEK_DIMENSITY_800,
-    MEDIATEK_DIMENSITY_700,
-    MEDIATEK_DIMENSITY_600,
-    MEDIATEK_DIMENSITY_500,
-    MEDIATEK_DIMENSITY_400,
-    MEDIATEK_DIMENSITY_300,
-    MEDIATEK_DIMENSITY_200,
-    MEDIATEK_DIMENSITY_100
+    BIONIC,
+    EXYNOS,
+    HELIO,
+    SNAPDRAGON,
+    TEGRA,
+    KIRIN,
+    MEDIATEK,
+    UNISOC;
+
+    private static final Map<String, Processor> LOOKUP =
+            Stream.of(values()).collect(Collectors.toMap(Enum::name, e -> e));
+
+    public static Processor fromString(String text) {
+        if (text == null || text.isBlank()) return null;
+        return LOOKUP.getOrDefault(text.trim().toUpperCase(), null);
+    }
 }

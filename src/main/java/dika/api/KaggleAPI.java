@@ -1,4 +1,4 @@
-package dika;
+package dika.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,8 +33,8 @@ public class KaggleAPI {
     public void responseCreate(String[] args) throws IOException, InterruptedException {
         String apiKey = getKaggleAPIKey();
         String apiBase   = "https://www.kaggle.com/api/v1";
-        String endpoint  = apiBase + "/datasets/download/" + dataset;  // без "/files"
-        String version   = "1";  // или получите версию через API, если их несколько
+        String endpoint  = apiBase + "/datasets/download/" + dataset;
+        String version   = "1";
         String downloadUrl = endpoint + "?datasetVersionNumber=" + version;
 
         String cred = Base64.getEncoder()
@@ -48,11 +48,12 @@ public class KaggleAPI {
 
 
         HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.ALWAYS)  // Убедитесь, что редиректы автоматически обрабатываются
+                .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
 
 
-        HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(Paths.get("mobiles-dataset-2025.zip")));
+        HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers
+                .ofFile(Paths.get("mobiles-dataset-2025.zip")));
 
         if (response.statusCode() == 200) {
             System.out.println("Файл успешно загружен в директорию: " + response.body());
@@ -66,7 +67,8 @@ public class KaggleAPI {
         File jsonFile = new File(jsonFilePath);
 
         if (!jsonFile.exists()) {
-            throw new FileNotFoundException("Файл kaggle.json не найден. Убедитесь, что он находится в директории ~/.kaggle/");
+            throw new FileNotFoundException
+                    ("Файл kaggle.json не найден. Убедитесь, что он находится в директории ~/.kaggle/");
         }
 
         String content = new String(Files.readAllBytes(jsonFile.toPath()));
@@ -82,7 +84,6 @@ public class KaggleAPI {
         if (keyNode.isMissingNode()) {
             throw new IllegalArgumentException("API-ключ не найден в файле kaggle.json");
         }
-
         return keyNode.asText();
     }
 }
