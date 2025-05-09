@@ -1,12 +1,12 @@
 package dika.controller;
 
+import dika.criteria.CriteriaAPI;
 import dika.enums.BatteryCapacity;
 import dika.enums.InternalStorage;
 import dika.enums.PhoneBrands;
 import dika.enums.Processor;
 import dika.enums.ScreenDiagonal;
 import dika.model.Phone;
-import dika.service.SearchPhones;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,11 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ViewController {
 
-    private final SearchPhones searchPhones;
+    private final CriteriaAPI criteriaSearch;
 
     @GetMapping
     public String listPhones(
-
             @RequestParam(required = false) String model,
             @RequestParam(required = false) List<String> brand,
             @RequestParam(required = false) List<String> processor,
@@ -37,7 +36,7 @@ public class ViewController {
             @RequestParam(required = false) String sort,
             Model ui
     ) {
-        List<Phone> phones = searchPhones.searchAndSortPhones(
+        List<Phone> phones = criteriaSearch.searchAndSortPhones(
                 brand,
                 processor,
                 screenDiagonal,

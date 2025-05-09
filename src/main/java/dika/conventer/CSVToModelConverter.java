@@ -40,7 +40,7 @@ public class CSVToModelConverter {
                                             "").replace(",", ".").trim()))
                                     .batteryCapacity(Double.parseDouble(record.get("Battery Capacity")
                                             .replaceAll("\\p{L}", "").
-                                            replace(",", ".").trim()))
+                                            replace(",", "").trim()))
                                     .internalStorage(values[values.length - 1])
                                     .build()
                     )
@@ -53,9 +53,8 @@ public class CSVToModelConverter {
     public static Iterable<CSVRecord> processCSVFile(String filePath) throws IOException {
         Reader in = new FileReader(filePath);
 
-        Iterable<CSVRecord> records = CSVFormat.DEFAULT
+        return CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
                 .parse(in);
-        return records;
     }
 }

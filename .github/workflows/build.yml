@@ -1,0 +1,62 @@
+# GitHub Actions – Java 17, Maven, PostgreSQL service
+name: Java CI
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ user }}
+          POSTGRES_PASSWORD: ${{ password }}
+          POSTGRES_DB: phoneservice
+        ports: [ '5432:5432' ]
+        options: >-
+          --health-cmd "pg_isready -U ${{ user }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 + Maven cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Flyway migrate (local container)
+        run: >-
+          mvn -B -ntp flyway:migrate
+          -Dflyway.url=jdbc:postgresql://localhost:5432/phoneservice
+          -Dflyway.user=${{ user }}
+          -Dflyway.password=${{ password }}
+          -DskipTests
+
+      - name: Build & test with Maven
+        run: mvn -B -ntp verify
+
+      - name: Upload test reports (Surefire)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/*.xml'
+
+      - name: Upload built JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phone-service-jar
+          path: target/*-SNAPSHOT.jar

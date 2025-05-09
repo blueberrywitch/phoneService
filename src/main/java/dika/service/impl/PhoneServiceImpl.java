@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 public class PhoneServiceImpl implements PhoneService {
 
     private final PhoneRepository phoneRepository;
-    private final CSVToModelConverter csvToModelConverter;
-
 
     @Override
     public Phone createPhone(Phone phone) {
@@ -59,7 +57,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public void saveCSV(String filePath) throws IOException {
-        List<Phone> phones = csvToModelConverter.convertCSVToPhones(CSVToModelConverter.processCSVFile(filePath));
+        List<Phone> phones = CSVToModelConverter.convertCSVToPhones(CSVToModelConverter.processCSVFile(filePath));
         for (Phone phone : phones) {
             createPhone(phone);
         }

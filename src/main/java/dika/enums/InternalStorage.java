@@ -10,9 +10,6 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @Getter
 public enum InternalStorage {
-    GB_4("4GB"),
-    GB_8("8GB"),
-    GB_16("16GB"),
     GB_32("32GB"),
     GB_64("64GB"),
     GB_128("128GB"),

@@ -1,25 +1,25 @@
-package dika.service.impl;
+package dika.criteria;
 
 import dika.enums.BatteryCapacity;
+import dika.enums.InternalStorage;
 import dika.enums.ScreenDiagonal;
 import dika.model.Characteristics;
 import dika.model.Phone;
-import dika.service.SearchPhones;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +27,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SearchPhonesImpl implements SearchPhones {
+public class CriteriaAPI {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
     public List<Phone> searchAndSortPhones(
             List<String> brands,
             List<String> processor,
@@ -135,19 +134,23 @@ public class SearchPhonesImpl implements SearchPhones {
 
     private void internalStoragePredicate(List<Predicate> predicates, List<String> internalStorage,
                                           CriteriaBuilder cb, Join<Phone, Characteristics> chr) {
-        if (internalStorage != null && !internalStorage.isEmpty()) {
-            log.info("Internal Storage: {}", internalStorage);
-            Predicate[] preds = internalStorage.stream()
-                    .map(b ->
-                            cb.equal(
-                                    cb.lower(chr.get("internalStorage").as(String.class)), b.toLowerCase()
-                            )
-                    )
-                    .toArray(Predicate[]::new);
-            predicates.add(cb.or(preds));
+        if (internalStorage == null || internalStorage.isEmpty()) {
+            return;
         }
-    }
 
+        Predicate[] preds = internalStorage.stream()
+                .map(key -> {
+                    // "GB_128" → enum → "128GB"
+                    String dbValue = InternalStorage.valueOf(key).getDisplayValue();
+                    return cb.equal(
+                            cb.lower(chr.get("internalStorage").as(String.class)),
+                            dbValue.toLowerCase()
+                    );
+                })
+                .toArray(Predicate[]::new);
+
+        predicates.add(cb.or(preds));
+    }
 
     private void batteryCapacityPredicate(List<Predicate> predicates, List<String> batteryCapacity,
                                           CriteriaBuilder cb, Join<Phone, Characteristics> chr) {
@@ -164,8 +167,8 @@ public class SearchPhonesImpl implements SearchPhones {
         }
     }
 
-    private void pricePredicate(List<Predicate> predicates,  Double priceMin,  Double priceMax,
-            CriteriaBuilder cb, Root<Phone> root
+    private void pricePredicate(List<Predicate> predicates, Double priceMin, Double priceMax,
+                                CriteriaBuilder cb, Root<Phone> root
     ) {
         if (priceMin == null && priceMax == null) {
             return;

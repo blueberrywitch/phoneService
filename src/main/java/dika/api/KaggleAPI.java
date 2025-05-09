@@ -22,29 +22,26 @@ import java.util.Base64;
 @Component
 public class KaggleAPI {
 
+    private static final String USERNAME = "dinaramatugylina";
     @Value("${spring.app.kaggle.name}")
     private String dataset;
-
     @Value("${spring.app.kaggle.url}")
     private String kaggleUrl;
 
-    private String username = "dinaramatugylina";
-
-    public void responseCreate(String[] args) throws IOException, InterruptedException {
+    public void responseCreate() throws IOException, InterruptedException {
         String apiKey = getKaggleAPIKey();
-        String apiBase   = "https://www.kaggle.com/api/v1";
-        String endpoint  = apiBase + "/datasets/download/" + dataset;
-        String version   = "1";
+        String apiBase = "https://www.kaggle.com/api/v1";
+        String endpoint = apiBase + "/datasets/download/" + dataset;
+        String version = "1";
         String downloadUrl = endpoint + "?datasetVersionNumber=" + version;
 
         String cred = Base64.getEncoder()
-                .encodeToString((username + ":" + apiKey).getBytes(StandardCharsets.UTF_8));
+                .encodeToString((USERNAME + ":" + apiKey).getBytes(StandardCharsets.UTF_8));
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(downloadUrl))
                 .header("Authorization", "Basic " + cred)
                 .build();
-
 
 
         HttpClient client = HttpClient.newBuilder()
@@ -72,8 +69,7 @@ public class KaggleAPI {
         }
 
         String content = new String(Files.readAllBytes(jsonFile.toPath()));
-        String apiKey = extractApiKey(content);
-        return apiKey;
+        return extractApiKey(content);
     }
 
     private String extractApiKey(String jsonContent) throws JsonProcessingException {

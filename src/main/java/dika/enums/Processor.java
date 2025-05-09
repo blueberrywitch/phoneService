@@ -9,7 +9,6 @@ public enum Processor {
     EXYNOS,
     HELIO,
     SNAPDRAGON,
-    TEGRA,
     KIRIN,
     MEDIATEK,
     UNISOC;

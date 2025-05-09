@@ -33,6 +33,6 @@ public enum PhoneBrands {
     public static List<String> getAllAsStrings() {
         return Stream.of(values())
                 .map(Enum::name)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -17,3 +17,7 @@ spring:
     kaggle:
       url: https://www.kaggle.com/datasets/
       name: abdulmalik1518/mobiles-dataset-2025
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validateMigrationNaming: true
