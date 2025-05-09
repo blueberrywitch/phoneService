@@ -1,5 +1,6 @@
 package dika.conventer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedOutputStream;
@@ -11,6 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Component
+@Slf4j
 public class UnzipFile {
     public void unzip(String zipFilePath, String destDir) {
 
@@ -21,12 +23,12 @@ public class UnzipFile {
             ZipEntry entry;
             File zipFile = new File(zipFilePath);
             if (!zipFile.exists()) {
-                System.err.println("Архив не найден по пути: " + zipFilePath);
+                log.info("Архив не найден по пути: {}", zipFilePath);
                 return;
             }
 
             while ((entry = zipIn.getNextEntry()) != null) {
-                System.out.println("Extracting: " + entry.getName());
+                log.info("Extracting: {}", entry.getName());
                 File file = new File(destDir, entry.getName());
                 if (!entry.isDirectory()) {
                     extractFile(zipIn, file);
@@ -34,10 +36,10 @@ public class UnzipFile {
                     file.mkdirs();
                 }
                 zipIn.closeEntry();
-                System.out.println("Extracted: " + file.getAbsolutePath());
+                log.info("Extracted: {}", file.getAbsolutePath());
             }
         } catch (IOException e) {
-            System.err.println("Error while unzipping: " + e.getMessage());
+            log.info("Error while unzipping: {}", e.getMessage());
         }
     }
 

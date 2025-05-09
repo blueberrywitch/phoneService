@@ -18,17 +18,16 @@ public enum InternalStorage {
     TB_1("1TB"),
     TB_2("2TB");
 
-    private final String displayValue;
-
-    public String getDisplayValue() {
-        return displayValue;
-    }
-
     private static final Map<String, InternalStorage> LOOKUP =
             Stream.of(values())
                     .collect(Collectors.toMap(
                             s -> s.displayValue.toLowerCase(),
                             s -> s
                     ));
+    private final String displayValue;
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
 
 }

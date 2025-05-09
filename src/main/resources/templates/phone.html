@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>Каталог телефонов</title>
@@ -11,32 +11,40 @@
             font-family: 'Segoe UI', Tahoma, sans-serif;
             color: #4a4a4a;
         }
+
         .container {
             padding: 2rem;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             margin-top: 20px;
         }
+
         .search-sidebar {
             padding-right: 20px;
         }
+
         .filter-group {
             margin-bottom: 1.5rem;
         }
+
         .filter-wrapper {
             position: relative;
         }
+
         .filter-list {
             padding: 0.5rem;
         }
+
         /* Скрываем все элементы, начиная с шестого */
         .filter-list .form-check:nth-child(n+6) {
             display: none;
         }
+
         /* При раскрытии показываем все */
         .filter-list.expanded .form-check {
             display: block;
         }
+
         .toggle-btn {
             display: inline-block;
             margin-top: 0.5rem;
@@ -47,6 +55,7 @@
             border: none;
             padding: 0;
         }
+
         .toggle-btn:focus {
             outline: none;
             box-shadow: none;
@@ -62,19 +71,20 @@
             <div class="filter-list" data-name="${name}">
                 <div class="form-check" th:each="item : ${items}">
                     <input class="form-check-input"
-                           type="checkbox"
+                           th:checked="${selectedParams != null and #lists.contains(selectedParams, item.name())}"
                            th:id="${name} + '-' + ${item.name()}"
                            th:name="${name}"
                            th:value="${item.name()}"
-                           th:checked="${selectedParams != null and #lists.contains(selectedParams, item.name())}"/>
+                           type="checkbox"/>
                     <label class="form-check-label"
                            th:for="${name} + '-' + ${item.name()}"
                            th:text="${item}">[Item]</label>
                 </div>
             </div>
-            <button type="button"
-                    class="toggle-btn"
-                    data-name="${name}">Показать ещё</button>
+            <button class="toggle-btn"
+                    data-name="${name}"
+                    type="button">Показать ещё
+            </button>
         </div>
     </th:block>
 
@@ -84,19 +94,20 @@
             <div class="filter-list" data-name="${name}">
                 <div class="form-check" th:each="item : ${items}">
                     <input class="form-check-input"
-                           type="checkbox"
+                           th:checked="${selectedParams != null and #lists.contains(selectedParams, item.name())}"
                            th:id="${name} + '-' + ${item.name()}"
                            th:name="${name}"
                            th:value="${item.name()}"
-                           th:checked="${selectedParams != null and #lists.contains(selectedParams, item.name())}"/>
+                           type="checkbox"/>
                     <label class="form-check-label"
                            th:for="${name} + '-' + ${item.name()}"
                            th:text="${item.displayValue}">[Display]</label>
                 </div>
             </div>
-            <button type="button"
-                    class="toggle-btn"
-                    data-name="${name}">Показать ещё</button>
+            <button class="toggle-btn"
+                    data-name="${name}"
+                    type="button">Показать ещё
+            </button>
         </div>
     </th:block>
 
@@ -106,26 +117,26 @@
         <!-- Сайдбар -->
         <div class="col-md-3 search-sidebar">
             <h5 class="mb-3">Поиск по параметрам</h5>
-            <form th:action="@{/phones}" method="get">
+            <form method="get" th:action="@{/phones}">
                 <!-- Модель -->
                 <div class="filter-group">
                     <label for="model">Модель:</label>
-                    <input type="text" id="model" name="model"
-                           class="form-control"
-                           th:value="${param.model}"/>
+                    <input class="form-control" id="model" name="model"
+                           th:value="${param.model}"
+                           type="text"/>
                 </div>
                 <!-- Цена -->
                 <div class="filter-group">
                     <label>Цена ($):</label>
                     <div class="d-flex">
-                        <input type="number" name="priceMin"
-                               class="form-control me-2"
+                        <input class="form-control me-2" name="priceMin"
                                placeholder="от"
-                               th:value="${param.priceMin}"/>
-                        <input type="number" name="priceMax"
-                               class="form-control"
+                               th:value="${param.priceMin}"
+                               type="number"/>
+                        <input class="form-control" name="priceMax"
                                placeholder="до"
-                               th:value="${param.priceMax}"/>
+                               th:value="${param.priceMax}"
+                               type="number"/>
                     </div>
                 </div>
                 <!-- Фильтры -->
@@ -150,29 +161,29 @@
                     <div th:replace="~{::filterListDisplay(${batteryCapacity}, 'batteryCapacity', param.batteryCapacity)}"></div>
                 </div>
                 <div class="d-flex">
-                    <button type="submit" class="btn btn-primary me-2">Найти</button>
-                    <a th:href="@{/phones}" class="btn btn-secondary">Сбросить</a>
+                    <button class="btn btn-primary me-2" type="submit">Найти</button>
+                    <a class="btn btn-secondary" th:href="@{/phones}">Сбросить</a>
                 </div>
             </form>
         </div>
 
         <!-- Результаты -->
         <div class="col-md-9">
-            <form th:action="@{/phones}" method="get" class="d-flex align-items-center mb-3">
-                <input type="hidden" name="model"           th:value="${param.model}"/>
-                <input type="hidden" name="priceMin"        th:value="${param.priceMin}"/>
-                <input type="hidden" name="priceMax"        th:value="${param.priceMax}"/>
-                <input type="hidden" name="brand"           th:value="${param.brand}"/>
-                <input type="hidden" name="processor"       th:value="${param.processor}"/>
-                <input type="hidden" name="internalStorage" th:value="${param.internalStorage}"/>
-                <input type="hidden" name="screenDiagonal"  th:value="${param.screenDiagonal}"/>
-                <input type="hidden" name="batteryCapacity" th:value="${param.batteryCapacity}"/>
+            <form class="d-flex align-items-center mb-3" method="get" th:action="@{/phones}">
+                <input name="model" th:value="${param.model}" type="hidden"/>
+                <input name="priceMin" th:value="${param.priceMin}" type="hidden"/>
+                <input name="priceMax" th:value="${param.priceMax}" type="hidden"/>
+                <input name="brand" th:value="${param.brand}" type="hidden"/>
+                <input name="processor" th:value="${param.processor}" type="hidden"/>
+                <input name="internalStorage" th:value="${param.internalStorage}" type="hidden"/>
+                <input name="screenDiagonal" th:value="${param.screenDiagonal}" type="hidden"/>
+                <input name="batteryCapacity" th:value="${param.batteryCapacity}" type="hidden"/>
                 <label class="me-2">Сортировка:</label>
-                <select name="sort" class="form-select form-select-sm w-auto"
+                <select class="form-select form-select-sm w-auto" name="sort"
                         onchange="this.form.submit()">
-                    <option value="" th:selected="${param.sort == null or param.sort == ''}">Без сортировки</option>
-                    <option th:value="price_asc"    th:selected="${param.sort=='price_asc'}">Цена ↑</option>
-                    <option th:value="price_desc"   th:selected="${param.sort=='price_desc'}">Цена ↓</option>
+                    <option th:selected="${param.sort == null or param.sort == ''}" value="">Без сортировки</option>
+                    <option th:selected="${param.sort=='price_asc'}" th:value="price_asc">Цена ↑</option>
+                    <option th:selected="${param.sort=='price_desc'}" th:value="price_desc">Цена ↓</option>
                 </select>
             </form>
 
@@ -192,8 +203,8 @@
                         <td th:text="${phone.model}">Model</td>
                         <td th:text="${phone.price}">Price</td>
                         <td>
-                            <a th:href="@{/phones/{id}(id=${phone.id})}"
-                               class="btn btn-info btn-sm">Подробнее</a>
+                            <a class="btn btn-info btn-sm"
+                               th:href="@{/phones/{id}(id=${phone.id})}">Подробнее</a>
                         </td>
                     </tr>
                     </tbody>
@@ -205,10 +216,10 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.filter-wrapper').forEach(function(wrapper) {
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.filter-wrapper').forEach(function (wrapper) {
             const list = wrapper.querySelector('.filter-list');
-            const btn  = wrapper.querySelector('.toggle-btn');
+            const btn = wrapper.querySelector('.toggle-btn');
 
             // Если элементов ≤5, скрываем кнопку
             if (wrapper.querySelectorAll('.form-check').length <= 5) {
@@ -216,7 +227,7 @@
                 return;
             }
 
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const expanded = list.classList.toggle('expanded');
                 btn.textContent = expanded ? 'Показать меньше' : 'Показать ещё';
             });

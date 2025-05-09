@@ -1,5 +1,6 @@
 package dika.conventer;
 
+import dika.exception.FileReadException;
 import dika.model.Characteristics;
 import dika.model.Phone;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +22,13 @@ public class CSVToModelConverter {
         List<Phone> phones = new ArrayList<>();
         for (CSVRecord record : records) {
             String[] values = record.get("Model Name").split(" ");
-            String modelName = "";
+            StringBuilder modelName = new StringBuilder();
             for (int i = 0; i < values.length - 1; i++) {
-                modelName += values[i] + " ";
+                modelName.append(values[i]).append(" ");
             }
             phones.add(Phone.builder()
                     .brand(record.get("Company Name"))
-                    .model(modelName)
+                    .model(modelName.toString())
                     .price(Double.parseDouble(record.get("Launched Price (USA)").replaceAll("[^0-9.]",
                             "").replace(",", ".").trim()))
                     .characteristics(
@@ -50,11 +51,14 @@ public class CSVToModelConverter {
     }
 
 
-    public static Iterable<CSVRecord> processCSVFile(String filePath) throws IOException {
-        Reader in = new FileReader(filePath);
-
-        return CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .parse(in);
+    public static Iterable<CSVRecord> processCSVFile(String filePath) {
+        try (Reader in = new FileReader(filePath)) {
+            return CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+        } catch (IOException e) {
+            log.info("Ошибка чтения файла: {}", e.getMessage());
+            throw new FileReadException("Ошибка чтения файла: " + e.getMessage());
+        }
     }
 }

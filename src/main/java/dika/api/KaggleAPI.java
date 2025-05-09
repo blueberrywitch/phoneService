@@ -3,6 +3,7 @@ package dika.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 @Component
+@Slf4j
 public class KaggleAPI {
 
     private static final String USERNAME = "dinaramatugylina";
@@ -53,9 +55,9 @@ public class KaggleAPI {
                 .ofFile(Paths.get("mobiles-dataset-2025.zip")));
 
         if (response.statusCode() == 200) {
-            System.out.println("Файл успешно загружен в директорию: " + response.body());
+            log.info("Файл успешно загружен в директорию: {}", response.body());
         } else {
-            System.out.println("Ошибка загрузки: " + response.statusCode());
+            log.info("Ошибка загрузки: {}", response.statusCode());
         }
     }
 

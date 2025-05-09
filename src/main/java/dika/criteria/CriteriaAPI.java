@@ -18,7 +18,6 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,13 +78,6 @@ public class CriteriaAPI {
 
         return entityManager.createQuery(cq)
                 .getResultList();
-    }
-
-    private void addPredicateIfValid(List<Predicate> predicates, CriteriaBuilder criteriaBuilder,
-                                     Root<Phone> root, String fieldName, String value) {
-        if (StringUtils.hasText(value)) {
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(fieldName)), "%" + value.toLowerCase() + "%"));
-        }
     }
 
     private void brandPredicate(List<Predicate> predicates, List<String> brands,
