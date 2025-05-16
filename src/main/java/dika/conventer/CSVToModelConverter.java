@@ -5,9 +5,11 @@ import dika.model.Characteristics;
 import dika.model.Phone;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -16,7 +18,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class CSVToModelConverter {
+public class CSVToModelConverter implements AutoCloseable{
 
     public static List<Phone> convertCSVToPhones(Iterable<CSVRecord> records) {
         List<Phone> phones = new ArrayList<>();
@@ -51,14 +53,20 @@ public class CSVToModelConverter {
     }
 
 
-    public static Iterable<CSVRecord> processCSVFile(String filePath) {
+    public static List<Phone> processCSVFile(String filePath){
         try (Reader in = new FileReader(filePath)) {
-            return CSVFormat.DEFAULT
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .parse(in);
+            return convertCSVToPhones(records);
         } catch (IOException e) {
             log.info("Ошибка чтения файла: {}", e.getMessage());
             throw new FileReadException("Ошибка чтения файла: " + e.getMessage());
         }
     }
+
+    @Override
+    public void close() throws Exception {
+    }
 }
+

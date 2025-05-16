@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -56,8 +55,8 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
-    public void saveCSV(String filePath) throws IOException {
-        List<Phone> phones = CSVToModelConverter.convertCSVToPhones(CSVToModelConverter.processCSVFile(filePath));
+    public void saveCSV(String filePath) {
+        List<Phone> phones = CSVToModelConverter.processCSVFile(filePath);
         for (Phone phone : phones) {
             createPhone(phone);
         }
@@ -68,5 +67,5 @@ public class PhoneServiceImpl implements PhoneService {
             setter.accept(newValue);
         }
     }
-
 }
+
