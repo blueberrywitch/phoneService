@@ -51,14 +51,16 @@ public class CSVToModelConverter {
     }
 
 
-    public static Iterable<CSVRecord> processCSVFile(String filePath) {
+    public static List<Phone> processCSVFile(String filePath) {
         try (Reader in = new FileReader(filePath)) {
-            return CSVFormat.DEFAULT
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .parse(in);
+            return convertCSVToPhones(records);
         } catch (IOException e) {
             log.info("Ошибка чтения файла: {}", e.getMessage());
             throw new FileReadException("Ошибка чтения файла: " + e.getMessage());
         }
     }
 }
+
